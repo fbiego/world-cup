@@ -272,7 +272,7 @@ bool requests = false;
 bool countdown;
 long start;
 
-bool playing, firstHalf;
+bool playing, firstHalf, timeSet;
 long periodStart;
 DynamicJsonDocument json(4096);
 
@@ -369,8 +369,12 @@ void requestResult(int statusCode, String payload)
 
     deserializeJson(json, payload);
 
-    long time = json["time"].as<long>();
-    rtc.setTime(time);
+    if (!timeSet)
+    {
+      long time = json["time"].as<long>();
+      rtc.setTime(time);
+      timeSet = true;
+    }
 
     String tournament = json["match"]["tournament"].as<String>();
 
@@ -412,7 +416,7 @@ void requestResult(int statusCode, String payload)
       lv_obj_add_flag(ui_countdownLabel, LV_OBJ_FLAG_HIDDEN);
       countdown = false;
 
-      if (matchCode == 6)
+      if (matchCode == 6 || matchCode == 7)
       {
         playing = true;
         lv_obj_clear_flag(ui_matchTime, LV_OBJ_FLAG_HIDDEN);
@@ -457,6 +461,7 @@ void sendRequest(void *parameter)
 void connectWiFi(void *parameter)
 {
   uint8_t status;
+  lv_label_set_text(ui_stadiumText, "Connecting to WiFi...");
   while (true)
   {
     status = wifiMulti.run();
@@ -465,6 +470,11 @@ void connectWiFi(void *parameter)
     {
       break;
     }
+  }
+  if (status == WL_CONNECTED){
+    lv_label_set_text(ui_stadiumText, "WiFi Connected");
+  } else {
+    lv_label_set_text_fmt(ui_stadiumText, "Failed to connect WiFi, status %d", status);
   }
   Serial.printf("WiFi exit: %d\n", status);
   // When you're done, call vTaskDelete. Don't forget this!

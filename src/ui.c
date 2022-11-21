@@ -223,6 +223,7 @@ void ui_matchScreen_screen_init(void)
     lv_obj_set_style_pad_right(ui_matchTime, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_top(ui_matchTime, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_bottom(ui_matchTime, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_flag(ui_matchTime, LV_OBJ_FLAG_HIDDEN);
 
     ui_countdownLabel = lv_label_create(ui_matchScreen);
     lv_obj_set_width(ui_countdownLabel, LV_SIZE_CONTENT);   /// 1
